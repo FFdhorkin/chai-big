@@ -1,11 +1,9 @@
-module.exports = function (BN) {
-  const isEqualTo = BN.prototype.eq;
-  const isGreaterThan = BN.prototype.gt;
-  const isGreaterThanOrEqualTo = BN.prototype.gte;
-  const isLessThan = BN.prototype.lt;
-  const isLessThanOrEqualTo = BN.prototype.lte;
-  const isNegative = BN.prototype.isNeg;
-  const isZero = BN.prototype.isZero;
+module.exports = function (Big) {
+  const isEqualTo = Big.prototype.eq;
+  const isGreaterThan = Big.prototype.gt;
+  const isGreaterThanOrEqualTo = Big.prototype.gte;
+  const isLessThan = Big.prototype.lt;
+  const isLessThanOrEqualTo = Big.prototype.lte;
 
   return function (chai, utils) {
     const flag = utils.flag;
@@ -14,25 +12,25 @@ module.exports = function (BN) {
       utils.flag(this, 'bignumber', true);
     });
 
-    // BN objects created using different (compatible) instances of BN can be used via BN.isBN()
-    const isBN = function (object) {
-      return object instanceof BN || BN.isBN(object);
+    // Big objects created using different (compatible) instances of Big can be identified by constructor name
+    const isBig = function (object) {
+      return object instanceof Big || (object && object.constructor && object.constructor.name === 'Big');
     };
 
     const convert = function (value) {
-      if (isBN(value)) {
+      if (isBig(value)) {
         return value;
       } else if (typeof value === 'string') {
-        return new BN(value);
-      // BN also supports conversion from e.g. JavaScript numbers, but only for small values. We disable that entirely
+        return new Big(value);
+        // Big also supports conversion from e.g. JavaScript numbers, but only for small values. We disable that entirely
       } else {
         new chai.Assertion(value).assert(false,
-          'expected #{act} to be an instance of BN or string');
+          'expected #{act} to be an instance of Big or string');
       }
     };
 
     // Overwrites the assertion performed by multiple methods (which should be aliases) with a new function. Prior to
-    // calling said function, we assert that the actual value is a BN, and attempt to convert all other arguments to BN.
+    // calling said function, we assert that the actual value is a Big, and attempt to convert all other arguments to Big.
     const overwriteMethods = function (messageIndex, methodNames, newAssertion) {
       function overwriteMethod (originalAssertion) {
         return function () {
@@ -57,7 +55,7 @@ module.exports = function (BN) {
     };
 
     // Overwrites the assertion performed by multiple properties (which should be aliases) with a new function. Prior to
-    // calling said function, we assert that the actual value is a BN.
+    // calling said function, we assert that the actual value is a Big.
     const overwriteProperties = function (propertyNames, newAssertion) {
       function overwriteProperty (originalAssertion) {
         return function () {
@@ -76,7 +74,7 @@ module.exports = function (BN) {
       );
     };
 
-    // BN.eq
+    // Big.eq
     overwriteMethods(1, ['equal', 'equals', 'eq'], function (actual, expected, msg) {
       if (msg) {
         flag(this, 'message', msg);
@@ -90,7 +88,7 @@ module.exports = function (BN) {
       );
     });
 
-    // BN.gt
+    // Big.gt
     overwriteMethods(1, ['above', 'gt', 'greaterThan'], function (actual, expected, msg) {
       if (msg) {
         flag(this, 'message', msg);
@@ -104,7 +102,7 @@ module.exports = function (BN) {
       );
     });
 
-    // BN.gte
+    // Big.gte
     overwriteMethods(1, ['least', 'gte'], function (actual, expected, msg) {
       if (msg) {
         flag(this, 'message', msg);
@@ -118,7 +116,7 @@ module.exports = function (BN) {
       );
     });
 
-    // BN.lt
+    // Big.lt
     overwriteMethods(1, ['below', 'lt', 'lessThan'], function (actual, expected, msg) {
       if (msg) {
         flag(this, 'message', msg);
@@ -132,7 +130,7 @@ module.exports = function (BN) {
       );
     });
 
-    // BN.lte
+    // Big.lte
     overwriteMethods(1, ['most', 'lte'], function (actual, expected, msg) {
       if (msg) {
         flag(this, 'message', msg);
@@ -160,20 +158,20 @@ module.exports = function (BN) {
       );
     });
 
-    // BN.isNeg
+    // Big.isNeg
     overwriteProperties(['negative'], function (value) {
       this.assert(
-        isNegative.bind(value)(),
+        isLessThan.bind(value)(Big(0)),
         'expected #{this} to be negative',
         'expected #{this} to not be negative',
         value.toString()
       );
     });
 
-    // BN.isZero
+    // Big.isZero
     overwriteProperties(['zero'], function (value) {
       this.assert(
-        isZero.bind(value)(),
+        isEqualTo.bind(value)(Big(0.0)),
         'expected #{this} to be zero',
         'expected #{this} to not be zero',
         value.toString()

@@ -1,16 +1,16 @@
-const BN = require('bn.js');
+const Big = require('big.js');
 const chai = require('chai');
 const expect = chai.expect;
 
 chai.should();
-chai.use(require('../chai-bn')(BN));
+chai.use(require('../chai-bn')(Big));
 chai.config.includeStack = true;
 
-describe('chai-bn', function () {
+describe('chai-big', function () {
   const customMessage = 'Custom message';
   const customMessageRegex = /^Custom message:/;
-  const actualMatchInvalidError = /to be an instance of BN/;
-  const expectedMatchInvalidError = /to be an instance of BN or string/;
+  const actualMatchInvalidError = /to be an instance of Big/;
+  const expectedMatchInvalidError = /to be an instance of Big or string/;
 
   const testerGenerator = function (functionNames) {
     return [
@@ -41,7 +41,7 @@ describe('chai-bn', function () {
   };
 
   const argTypeChecker = function (tester, notTester) {
-    it('fails when first argument is not BN or string', function () {
+    it('fails when first argument is not Big or string', function () {
       const testCases = [
         [10, '10'],
         [-10, '-10'],
@@ -55,12 +55,12 @@ describe('chai-bn', function () {
       });
     });
 
-    it('fails when second argument is not BN or string', function () {
+    it('fails when second argument is not Big or string', function () {
       const testCases = [
-        [new BN('10'), 10],
-        [new BN('-10'), -10],
-        [new BN('123456789123456789123456789'), 123456789123456789123456789],
-        [new BN('-123456789123456789123456789'), -123456789123456789123456789],
+        [new Big('10'), 10],
+        [new Big('-10'), -10],
+        [new Big('123456789123456789123456789'), 123456789123456789123456789],
+        [new Big('-123456789123456789123456789'), -123456789123456789123456789],
       ];
 
       testCases.forEach(([a, b]) => {
@@ -70,28 +70,28 @@ describe('chai-bn', function () {
     });
   };
 
-  const toBNCombinations = function (a, b) {
+  const toBigCombinations = function (a, b) {
     return [
       [a, b],
-      [new BN(a), b],
-      [a, new BN(b)],
-      [new BN(a), new BN(b)],
+      [new Big(a), b],
+      [a, new Big(b)],
+      [new Big(a), new Big(b)],
     ];
   };
 
   describe('equal/equals/eq', function () {
     const [tester, notTester] = testerGenerator(['equal', 'equals', 'eq']);
     const equalTestCases = [
-      ...toBNCombinations('10', '10'),
-      ...toBNCombinations('-10', '-10'),
-      ...toBNCombinations('123456789123456789123456789', '123456789123456789123456789'),
-      ...toBNCombinations('-123456789123456789123456789', '-123456789123456789123456789'),
+      ...toBigCombinations('10', '10'),
+      ...toBigCombinations('-10', '-10'),
+      ...toBigCombinations('123456789123456789123456789', '123456789123456789123456789'),
+      ...toBigCombinations('-123456789123456789123456789', '-123456789123456789123456789'),
     ];
     const notEqualTestCases = [
-      ...toBNCombinations('10', '9'),
-      ...toBNCombinations('-10', '-9'),
-      ...toBNCombinations('123456789123456789123456789', '123456789123456789123456788'),
-      ...toBNCombinations('-123456789123456789123456789', '-123456789123456789123456788'),
+      ...toBigCombinations('10', '9'),
+      ...toBigCombinations('-10', '-9'),
+      ...toBigCombinations('123456789123456789123456789', '123456789123456789123456788'),
+      ...toBigCombinations('-123456789123456789123456789', '-123456789123456789123456788'),
     ];
     it('asserts equality', function () {
       equalTestCases.forEach(([a, b]) => {
@@ -125,25 +125,25 @@ describe('chai-bn', function () {
   describe('above/gt/greaterThan', function () {
     const [tester, notTester] = testerGenerator(['above', 'gt', 'greaterThan']);
     const aboveTestCases = [
-      ...toBNCombinations('15', '10'),
-      ...toBNCombinations('15', '-10'),
-      ...toBNCombinations('-10', '-15'),
+      ...toBigCombinations('15', '10'),
+      ...toBigCombinations('15', '-10'),
+      ...toBigCombinations('-10', '-15'),
 
-      ...toBNCombinations('123456789123456789', '123456789123'),
-      ...toBNCombinations('123456789123456789', '-123456789123'),
-      ...toBNCombinations('-123456789123', '-123456789123456789'),
+      ...toBigCombinations('123456789123456789', '123456789123'),
+      ...toBigCombinations('123456789123456789', '-123456789123'),
+      ...toBigCombinations('-123456789123', '-123456789123456789'),
     ];
 
     const notAbovetestCases = [
-      ...toBNCombinations('10', '15'),
-      ...toBNCombinations('-10', '15'),
-      ...toBNCombinations('-15', '-10'),
-      ...toBNCombinations('-15', '15'),
-      ...toBNCombinations('-15', '-15'),
+      ...toBigCombinations('10', '15'),
+      ...toBigCombinations('-10', '15'),
+      ...toBigCombinations('-15', '-10'),
+      ...toBigCombinations('-15', '15'),
+      ...toBigCombinations('-15', '-15'),
 
-      ...toBNCombinations('123456789123', '123456789123456789'),
-      ...toBNCombinations('-123456789123', '123456789123456789'),
-      ...toBNCombinations('-123456789123456789', '-123456789123'),
+      ...toBigCombinations('123456789123', '123456789123456789'),
+      ...toBigCombinations('-123456789123', '123456789123456789'),
+      ...toBigCombinations('-123456789123456789', '-123456789123'),
     ];
 
     it('asserts aboveness', function () {
@@ -178,27 +178,27 @@ describe('chai-bn', function () {
   describe('least/gte', function () {
     const [tester, notTester] = testerGenerator(['gte']);
     const atLeastTestCases = [
-      ...toBNCombinations('15', '15'),
-      ...toBNCombinations('15', '-10'),
-      ...toBNCombinations('-10', '-15'),
-      ...toBNCombinations('15', '15'),
-      ...toBNCombinations('-15', '-15'),
+      ...toBigCombinations('15', '15'),
+      ...toBigCombinations('15', '-10'),
+      ...toBigCombinations('-10', '-15'),
+      ...toBigCombinations('15', '15'),
+      ...toBigCombinations('-15', '-15'),
 
-      ...toBNCombinations('123456789123456789', '123456789123456789'),
-      ...toBNCombinations('123456789123456789', '-123456789123'),
-      ...toBNCombinations('-123456789123', '-123456789123456789'),
-      ...toBNCombinations('123456789123456789', '123456789123456789'),
-      ...toBNCombinations('-123456789123456789', '-123456789123456789'),
+      ...toBigCombinations('123456789123456789', '123456789123456789'),
+      ...toBigCombinations('123456789123456789', '-123456789123'),
+      ...toBigCombinations('-123456789123', '-123456789123456789'),
+      ...toBigCombinations('123456789123456789', '123456789123456789'),
+      ...toBigCombinations('-123456789123456789', '-123456789123456789'),
     ];
 
     const notAtLeastTestCases = [
-      ...toBNCombinations('10', '15'),
-      ...toBNCombinations('-10', '15'),
-      ...toBNCombinations('-15', '-10'),
+      ...toBigCombinations('10', '15'),
+      ...toBigCombinations('-10', '15'),
+      ...toBigCombinations('-15', '-10'),
 
-      ...toBNCombinations('123456789123', '123456789123456789'),
-      ...toBNCombinations('-123456789123', '123456789123456789'),
-      ...toBNCombinations('-123456789123456789', '-123456789123'),
+      ...toBigCombinations('123456789123', '123456789123456789'),
+      ...toBigCombinations('-123456789123', '123456789123456789'),
+      ...toBigCombinations('-123456789123456789', '-123456789123'),
     ];
 
     it('asserts at least', function () {
@@ -237,27 +237,27 @@ describe('chai-bn', function () {
   describe('below/lt/lessThan', function () {
     const [tester, notTester] = testerGenerator(['below', 'lt', 'lessThan']);
     const belowTestCases = [
-      ...toBNCombinations('10', '15'),
-      ...toBNCombinations('-10', '15'),
-      ...toBNCombinations('-15', '-10'),
+      ...toBigCombinations('10', '15'),
+      ...toBigCombinations('-10', '15'),
+      ...toBigCombinations('-15', '-10'),
 
-      ...toBNCombinations('123456789123', '123456789123456789'),
-      ...toBNCombinations('-123456789123', '123456789123456789'),
-      ...toBNCombinations('-123456789123456789', '-123456789123'),
+      ...toBigCombinations('123456789123', '123456789123456789'),
+      ...toBigCombinations('-123456789123', '123456789123456789'),
+      ...toBigCombinations('-123456789123456789', '-123456789123'),
     ];
 
     const notBelowTestCases = [
-      ...toBNCombinations('15', '10'),
-      ...toBNCombinations('15', '-10'),
-      ...toBNCombinations('-10', '-15'),
-      ...toBNCombinations('15', '15'),
-      ...toBNCombinations('-15', '-15'),
+      ...toBigCombinations('15', '10'),
+      ...toBigCombinations('15', '-10'),
+      ...toBigCombinations('-10', '-15'),
+      ...toBigCombinations('15', '15'),
+      ...toBigCombinations('-15', '-15'),
 
-      ...toBNCombinations('123456789123456789', '123456789123'),
-      ...toBNCombinations('123456789123456789', '-123456789123'),
-      ...toBNCombinations('-123456789123', '-123456789123456789'),
-      ...toBNCombinations('123456789123456789', '123456789123456789'),
-      ...toBNCombinations('-123456789123456789', '-123456789123456789'),
+      ...toBigCombinations('123456789123456789', '123456789123'),
+      ...toBigCombinations('123456789123456789', '-123456789123'),
+      ...toBigCombinations('-123456789123', '-123456789123456789'),
+      ...toBigCombinations('123456789123456789', '123456789123456789'),
+      ...toBigCombinations('-123456789123456789', '-123456789123456789'),
     ];
 
     it('asserts belowness', function () {
@@ -292,26 +292,26 @@ describe('chai-bn', function () {
   describe('most/lte', function () {
     const [tester, notTester] = testerGenerator(['lte']);
     const atMostTestCases = [
-      ...toBNCombinations('10', '15'),
-      ...toBNCombinations('-10', '15'),
-      ...toBNCombinations('-15', '-10'),
-      ...toBNCombinations('15', '15'),
-      ...toBNCombinations('-15', '-15'),
+      ...toBigCombinations('10', '15'),
+      ...toBigCombinations('-10', '15'),
+      ...toBigCombinations('-15', '-10'),
+      ...toBigCombinations('15', '15'),
+      ...toBigCombinations('-15', '-15'),
 
-      ...toBNCombinations('123456789123', '123456789123456789'),
-      ...toBNCombinations('-123456789123', '123456789123456789'),
-      ...toBNCombinations('-123456789123456789', '-123456789123'),
-      ...toBNCombinations('123456789123456789', '123456789123456789'),
-      ...toBNCombinations('-123456789123456789', '-123456789123456789'),
+      ...toBigCombinations('123456789123', '123456789123456789'),
+      ...toBigCombinations('-123456789123', '123456789123456789'),
+      ...toBigCombinations('-123456789123456789', '-123456789123'),
+      ...toBigCombinations('123456789123456789', '123456789123456789'),
+      ...toBigCombinations('-123456789123456789', '-123456789123456789'),
     ];
     const notAtMostTestCases = [
-      ...toBNCombinations('15', '10'),
-      ...toBNCombinations('15', '-10'),
-      ...toBNCombinations('-10', '-15'),
+      ...toBigCombinations('15', '10'),
+      ...toBigCombinations('15', '-10'),
+      ...toBigCombinations('-10', '-15'),
 
-      ...toBNCombinations('123456789123456789', '123456789123'),
-      ...toBNCombinations('123456789123456789', '-123456789123'),
-      ...toBNCombinations('-123456789123', '-123456789123456789'),
+      ...toBigCombinations('123456789123456789', '123456789123'),
+      ...toBigCombinations('123456789123456789', '-123456789123'),
+      ...toBigCombinations('-123456789123', '-123456789123456789'),
     ];
 
     it('asserts at most', function () {
@@ -362,32 +362,32 @@ describe('chai-bn', function () {
       expect(a).to.be.a.bignumber.not.closeTo(b, delta, customMessage);
     };
     const closeTestCases = [
-      [new BN('15'), '15', '0'],
-      [new BN('15'), '10', '5'],
-      [new BN('15'), '20', '5'],
-      [new BN('-15'), '-15', '0'],
-      [new BN('-15'), '-10', '5'],
-      [new BN('-15'), '-20', '5'],
-      [new BN('123456789123456789'), '123456789123456789', '0'],
-      [new BN('123456789123456789'), '123456789123456780', '9'],
-      [new BN('123456789123456789'), '123456789123456798', '9'],
-      [new BN('-123456789123456789'), '-123456789123456789', '0'],
-      [new BN('-123456789123456789'), '-123456789123456780', '9'],
-      [new BN('-123456789123456789'), '-123456789123456798', '9'],
+      [new Big('15'), '15', '0'],
+      [new Big('15'), '10', '5'],
+      [new Big('15'), '20', '5'],
+      [new Big('-15'), '-15', '0'],
+      [new Big('-15'), '-10', '5'],
+      [new Big('-15'), '-20', '5'],
+      [new Big('123456789123456789'), '123456789123456789', '0'],
+      [new Big('123456789123456789'), '123456789123456780', '9'],
+      [new Big('123456789123456789'), '123456789123456798', '9'],
+      [new Big('-123456789123456789'), '-123456789123456789', '0'],
+      [new Big('-123456789123456789'), '-123456789123456780', '9'],
+      [new Big('-123456789123456789'), '-123456789123456798', '9'],
     ];
     const notCloseTestCases = [
-      [new BN('15'), '14', '0'],
-      [new BN('15'), '9', '5'],
-      [new BN('15'), '21', '5'],
-      [new BN('-15'), '-16', '0'],
-      [new BN('-15'), '-9', '5'],
-      [new BN('-15'), '-21', '5'],
-      [new BN('123456789123456789'), '123456789123456788', '0'],
-      [new BN('123456789123456789'), '123456789123456779', '9'],
-      [new BN('123456789123456789'), '123456789123456799', '9'],
-      [new BN('-123456789123456789'), '-123456789123456788', '0'],
-      [new BN('-123456789123456789'), '-123456789123456779', '9'],
-      [new BN('-123456789123456789'), '-123456789123456799', '9'],
+      [new Big('15'), '14', '0'],
+      [new Big('15'), '9', '5'],
+      [new Big('15'), '21', '5'],
+      [new Big('-15'), '-16', '0'],
+      [new Big('-15'), '-9', '5'],
+      [new Big('-15'), '-21', '5'],
+      [new Big('123456789123456789'), '123456789123456788', '0'],
+      [new Big('123456789123456789'), '123456789123456779', '9'],
+      [new Big('123456789123456789'), '123456789123456799', '9'],
+      [new Big('-123456789123456789'), '-123456789123456788', '0'],
+      [new Big('-123456789123456789'), '-123456789123456779', '9'],
+      [new Big('-123456789123456789'), '-123456789123456799', '9'],
     ];
 
     it('asserts closeness', function () {
@@ -432,8 +432,8 @@ describe('chai-bn', function () {
 
     it('asserts negativity', function () {
       const testCases = [
-        new BN('-1'),
-        new BN('-1234856789123456789'),
+        new Big('-1'),
+        new Big('-1234856789123456789'),
       ];
 
       testCases.forEach((a) => {
@@ -443,9 +443,9 @@ describe('chai-bn', function () {
 
     it('asserts unnegativity', function () {
       const testCases = [
-        new BN('0'),
-        new BN('1'),
-        new BN('1234856789123456789'),
+        new Big('0'),
+        new Big('1'),
+        new Big('1234856789123456789'),
       ];
 
       testCases.forEach((a) => {
@@ -453,7 +453,7 @@ describe('chai-bn', function () {
       });
     });
 
-    it('fails when argument is not BN or string', function () {
+    it('fails when argument is not Big or string', function () {
       const testCases = [
         -5,
         0,
@@ -480,7 +480,7 @@ describe('chai-bn', function () {
 
     it('asserts zeroness', function () {
       const testCases = [
-        new BN('0'),
+        new Big('0'),
       ];
 
       testCases.forEach((a) => {
@@ -490,10 +490,10 @@ describe('chai-bn', function () {
 
     it('asserts unzeroness', function () {
       const testCases = [
-        new BN('1'),
-        new BN('-1'),
-        new BN('123456789123456789'),
-        new BN('-123456789123456789'),
+        new Big('1'),
+        new Big('-1'),
+        new Big('123456789123456789'),
+        new Big('-123456789123456789'),
       ];
 
       testCases.forEach((a) => {
@@ -501,7 +501,7 @@ describe('chai-bn', function () {
       });
     });
 
-    it('fails when argument is not BN or string', function () {
+    it('fails when argument is not Big or string', function () {
       const testCases = [
         -5,
         0,
